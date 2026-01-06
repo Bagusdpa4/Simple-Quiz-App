@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiUser, BiLockAlt, BiShow, BiHide } from "react-icons/bi";
-import bgAuth from "../../assets/img/bg-auth.jpg";
 
 export const Register = () => {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ export const Register = () => {
   return (
     <div
       className="flex min-h-screen items-center justify-center p-4 font-sans bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${bgAuth})` }}
+      style={{ backgroundImage: `url('/images/bg-auth.jpg')` }}
     >
       <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl mt-16">
         {/* Header Section */}
