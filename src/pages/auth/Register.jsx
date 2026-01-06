@@ -1,21 +1,33 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BiUser, BiLockAlt, BiShow, BiHide } from "react-icons/bi";
+import { MdOutlineMail } from "react-icons/md";
 
 export const Register = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <div
-      className="flex min-h-screen items-center justify-center p-4 font-sans bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url('/images/bg-auth.jpg')` }}
+      className={`flex min-h-screen items-center justify-center bg-center bg-no-repeat p-4 font-sans transition-all duration-700 ${isLoaded ? "blur-0" : "blur-lg"}`}
+      style={{
+        backgroundColor: "#1e40af",
+        backgroundImage: `url('/images/bg-auth.jpg')`,
+        backgroundSize: "cover",
+      }}
     >
-      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl mt-16">
+      <img
+        src="/images/bg-auth.jpg"
+        className="hidden"
+        onLoad={() => setIsLoaded(true)}
+      />
+      <div className="mt-3 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl">
         {/* Header Section */}
         <div className="bg-blue-600 p-8 text-center text-white">
           <h2 className="text-2xl font-bold">Daftar Akun</h2>
@@ -46,6 +58,26 @@ export const Register = () => {
             </div>
           </div>
 
+          {/* Input Email */}
+          <div className="space-y-1">
+            <label className="block text-sm font-semibold text-gray-600">
+              Email
+            </label>
+            <div className="group relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 transition-colors group-focus-within:text-blue-500">
+                <MdOutlineMail size={20} />
+              </span>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                placeholder="Masukkan email"
+                required
+              />
+            </div>
+          </div>
+
           {/* Input Password */}
           <div className="space-y-1">
             <label className="block text-sm font-semibold text-gray-600">
@@ -66,7 +98,7 @@ export const Register = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute cursor-pointer inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3 text-gray-400 hover:text-gray-600"
               >
                 {showPassword ? <BiHide size={20} /> : <BiShow size={20} />}
               </button>
@@ -93,7 +125,7 @@ export const Register = () => {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute cursor-pointer inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3 text-gray-400 hover:text-gray-600"
               >
                 {showConfirmPassword ? (
                   <BiHide size={20} />
@@ -117,7 +149,7 @@ export const Register = () => {
             Sudah punya akun?{" "}
             <span
               onClick={() => navigate("/login")}
-              className="cursor-pointer text-blue-600 font-semibold hover:underline"
+              className="cursor-pointer font-semibold text-blue-600 hover:underline"
             >
               Masuk di sini
             </span>
