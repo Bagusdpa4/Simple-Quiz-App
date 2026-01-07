@@ -1,15 +1,54 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 import { BiLockAlt, BiShow, BiHide } from "react-icons/bi";
 import { MdOutlineMail } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
+import { showLoadingToast, showSuccessToast } from "../../helper/ToastHelper";
+import { loginAction } from "../../redux/action/auth/loginAction";
+import { API_ENDPOINT } from "../../utils/api-endpoint";
+const BASE_URL = import.meta.env.VITE_QUIZ_SERVER;
 
 export const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const handleInput = (e) => {
+    if (e) {
+      if (e.target.id === "email") {
+        setEmail(e.target.value);
+      }
+      if (e.target.id === "password") {
+        setPassword(e.target.value);
+      }
+    }
+  };
+
+  const handleLogin = async (e) => {
+    if (e) e.preventDefault();
+    const loadingToastId = showLoadingToast("Loading ...");
+
+    const login = await dispatch(
+      loginAction({
+        email: email,
+        password: password,
+      }),
+    );
+
+    toast.dismiss(loadingToastId);
+
+    if (login === true) {
+      showSuccessToast("Login Successfully");
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+    }
+  };
 
   return (
     <div
@@ -46,12 +85,14 @@ export const Login = () => {
                 <MdOutlineMail size={20} />
               </span>
               <input
+                id="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                required
+                onChange={handleInput}
                 className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Masukkan email"
-                required
               />
             </div>
           </div>
@@ -68,7 +109,10 @@ export const Login = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="password"
+                name="password"
+                autoComplete="off"
+                onChange={handleInput}
                 className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-12 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="********"
                 required
@@ -88,6 +132,8 @@ export const Login = () => {
             {/* Login Button Utama */}
             <button
               type="submit"
+              onKeyDown={(e) => e.key === "Enter"}
+              onClick={handleLogin}
               className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 font-bold text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 active:scale-95"
             >
               Masuk
@@ -106,10 +152,9 @@ export const Login = () => {
             {/* Google Login Button */}
             <button
               type="button"
-              onClick={() =>
-                (window.location =
-                  "https://simple-quiz-app-be.vercel.app/api/v1/auth/google")
-              }
+              onClick={() => {
+                window.location = `${BASE_URL}${API_ENDPOINT.GOOGLE}`;
+              }}
               className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-gray-200 bg-gray-100 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-blue-600 hover:bg-gray-50 active:scale-95"
             >
               <FcGoogle size={22} />

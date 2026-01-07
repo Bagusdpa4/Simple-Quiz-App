@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { BiUser, BiLockAlt, BiShow, BiHide } from "react-icons/bi";
 import { MdOutlineMail } from "react-icons/md";
+import { showLoadingToast, showSuccessToast } from "../../helper/ToastHelper";
+import toast from "react-hot-toast";
+import { registerAction } from "../../redux/action/auth/registerAction";
 
 export const Register = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -12,6 +17,46 @@ export const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const handleInput = (e) => {
+    if (e) {
+      if (e.target.id === "username") {
+        setUsername(e.target.value);
+      }
+      if (e.target.id === "email") {
+        setEmail(e.target.value);
+      }
+      if (e.target.id === "password") {
+        setPassword(e.target.value);
+      }
+      if (e.target.id === "confirmPassword") {
+        setConfirmPassword(e.target.value);
+      }
+    }
+  };
+
+  const handleRegister = async (e) => {
+    if (e) e.preventDefault();
+    const loadingToastId = showLoadingToast("Loading ...");
+
+    const register = await dispatch(
+      registerAction({
+        username: username,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+      }),
+    );
+
+    toast.dismiss(loadingToastId);
+
+    if (register === true) {
+      showSuccessToast("Register Successfully");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    }
+  };
 
   return (
     <div
@@ -48,9 +93,11 @@ export const Register = () => {
                 <BiUser size={20} />
               </span>
               <input
+                id="username"
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                name="username"
+                onChange={handleInput}
                 className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Username baru"
                 required
@@ -68,9 +115,11 @@ export const Register = () => {
                 <MdOutlineMail size={20} />
               </span>
               <input
+                id="email"
+                name="email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleInput}
                 className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-4 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Masukkan email"
                 required
@@ -88,9 +137,11 @@ export const Register = () => {
                 <BiLockAlt size={20} />
               </span>
               <input
+                id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleInput}
                 className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-12 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Buat password"
                 required
@@ -115,9 +166,11 @@ export const Register = () => {
                 <BiLockAlt size={20} />
               </span>
               <input
+                id="confirmPassword"
+                name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={handleInput}
                 className="w-full rounded-xl border border-gray-200 py-3 pl-10 pr-12 outline-none transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                 placeholder="Ulangi password"
                 required
@@ -139,6 +192,8 @@ export const Register = () => {
           {/* Register Button */}
           <button
             type="submit"
+            onKeyDown={(e) => e.key === "Enter"}
+            onClick={handleRegister}
             className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 font-bold text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 active:scale-95"
           >
             Daftar Sekarang
