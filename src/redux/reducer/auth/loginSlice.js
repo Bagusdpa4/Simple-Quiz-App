@@ -3,7 +3,7 @@ import { CookieStorage, CookiesKeys } from "../../../utils/cookie";
 
 const initialState = {
   token: CookieStorage.get(CookiesKeys.AuthToken) || null,
-  isLoggedIn: false,
+  isLoggedIn: !!CookieStorage.get(CookiesKeys.AuthToken),
   user: null,
   userProfile: null,
 };

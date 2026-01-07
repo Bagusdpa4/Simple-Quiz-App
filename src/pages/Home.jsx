@@ -31,16 +31,24 @@ export const Home = () => {
   const { isLoggedIn, user } = useSelector((state) => state.authLogin);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const tokenFromUrl = urlParams.get("token");
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
 
-    if (tokenFromUrl) {
-      CookieStorage.set(CookiesKeys.AuthToken, tokenFromUrl);
+    if (token) {
+      CookieStorage.set(CookiesKeys.AuthToken, token);
+
+      dispatch(setToken(token));
+      dispatch(setIsLoggedIn(true));
+
+      dispatch(getAuthenticateAction());
 
       navigate("/", { replace: true });
+    }else {
+      if (CookieStorage.get(CookiesKeys.AuthToken)) {
+         dispatch(getAuthenticateAction());
+      }
     }
-    dispatch(getAuthenticateAction());
-  }, [dispatch, location.search, navigate]);
+  }, []);
 
   const formatName = (fullname) => {
     if (!fullname) return "User";
