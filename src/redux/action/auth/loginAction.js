@@ -1,5 +1,5 @@
 import { CookiesKeys, CookieStorage } from "../../../utils/cookie";
-import { reduxLogin } from "../../../services/auth";
+import { reduxAuthenticate, reduxLogin } from "../../../services/auth";
 import {
   setIsLoggedIn,
   setToken,
@@ -25,4 +25,14 @@ export const loginAction = (input) => async (dispatch) => {
         }
       }
     });
+};
+
+export const getAuthenticateAction = () => async (dispatch) => {
+  try {
+    const result = await reduxAuthenticate();
+    dispatch(setUser(result.data.data));
+    return result.data.data;
+  } catch (error) {
+    console.error("reduxGetAuthenticateAction", error);
+  }
 };

@@ -8,3 +8,7 @@ export const reduxLogin = async (input) => {
 export const reduxRegister = async (input) => {
   return await http.post(API_ENDPOINT.REGISTER, input);
 };
+
+export const reduxAuthenticate = async () => {
+  return await http.get(API_ENDPOINT.AUTHENTICATE);
+};

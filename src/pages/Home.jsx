@@ -1,5 +1,6 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import Lottie from "lottie-react";
 import {
   BiPlayCircle,
@@ -12,16 +13,57 @@ import {
   BiInfinite,
   BiMessageDetail,
   BiCodeAlt,
+  BiUserCircle,
+  BiLogOut,
 } from "react-icons/bi";
-import { Footer } from "../assets/components/footer/Footer";
 import QuizAnimation from "../assets/components/animation/Student.json";
+import { Footer } from "../assets/components/footer/Footer";
+import { getAuthenticateAction } from "../redux/action/auth/loginAction";
+import { CookiesKeys, CookieStorage } from "../utils/cookie";
+import { logoutAction } from "../redux/action/auth/logoutAction";
 
 export const Home = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isLoggedIn = false;
-  const user = isLoggedIn
-    ? { username: "Pejuang Kuis", rank: 12, totalScore: 1250 }
-    : null;
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const { isLoggedIn, user } = useSelector((state) => state.authLogin);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const tokenFromUrl = urlParams.get("token");
+
+    if (tokenFromUrl) {
+      CookieStorage.set(CookiesKeys.AuthToken, tokenFromUrl);
+
+      navigate("/", { replace: true });
+    }
+    dispatch(getAuthenticateAction());
+  }, [dispatch, location.search, navigate]);
+
+  const formatName = (fullname) => {
+    if (!fullname) return "User";
+    const nameArray = fullname.split(" ");
+    if (nameArray.length > 2) {
+      return `${nameArray[0]} ${nameArray[1]}`;
+    }
+    return fullname;
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleLogout = () => {
+    dispatch(logoutAction());
+  };
 
   const popularCategories = [
     {
@@ -63,22 +105,71 @@ export const Home = () => {
             <h1 className="text-xl font-black tracking-tighter text-blue-500">
               QUIZ<span className="text-white">MASTER</span>
             </h1>
-            {!isLoggedIn && (
-              <div className="flex gap-4">
-                <button
-                  onClick={() => navigate("/login")}
-                  className="cursor-pointer text-xs font-bold transition-colors hover:text-blue-400"
-                >
-                  Masuk
-                </button>
-                <button
-                  onClick={() => navigate("/register")}
-                  className="cursor-pointer rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-bold shadow-lg hover:bg-blue-500"
-                >
-                  Daftar
-                </button>
-              </div>
-            )}
+
+            <div className="flex items-center gap-4">
+              {/* LOGIC: Jika TIDAK Login, tampilkan tombol Masuk & Daftar */}
+              {!isLoggedIn ? (
+                <>
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="cursor-pointer text-xs font-bold transition-colors hover:text-blue-400"
+                  >
+                    Masuk
+                  </button>
+                  <button
+                    onClick={() => navigate("/register")}
+                    className="cursor-pointer rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-bold shadow-lg hover:bg-blue-500"
+                  >
+                    Daftar
+                  </button>
+                </>
+              ) : (
+                <div className="relative" ref={menuRef}>
+                  <div
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="bg-slate-800 border-slate-700 hover:bg-slate-700 flex cursor-pointer items-center gap-2 rounded-full border py-1 pl-1 pr-3 transition-all"
+                  >
+                    <div className="text-slate-900 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[16px] font-bold">
+                      {user?.fullname
+                        ? user.fullname
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)
+                        : "U"}
+                    </div>
+                    <span className="text-[14px] text-xs font-bold">
+                      {formatName(user?.fullname) || "User"}
+                    </span>
+                  </div>
+
+                  {/* Dropdown Menu */}
+                  {isMenuOpen && (
+                    <div className="border-slate-100 animate-in fade-in zoom-in absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border bg-white py-2 shadow-xl duration-200">
+                      <button
+                        onClick={() => {
+                          navigate("/profile");
+                          setIsMenuOpen(false);
+                        }}
+                        className="text-slate-700 hover:bg-slate-200 flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors"
+                      >
+                        <BiUserCircle size={18} className="text-slate-500" />
+                        Profile
+                      </button>
+                      <div className="my-1 h-px bg-black"></div>{" "}
+                      <button
+                        onClick={handleLogout}
+                        className="text-rose-600 flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors hover:bg-red-100"
+                      >
+                        <BiLogOut size={18} />
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="mt-14 flex flex-col items-center justify-between gap-8 text-center lg:flex-row lg:text-left">
