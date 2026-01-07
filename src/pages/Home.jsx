@@ -37,9 +37,6 @@ export const Home = () => {
     if (token) {
       CookieStorage.set(CookiesKeys.AuthToken, token);
 
-      dispatch(setToken(token));
-      dispatch(setIsLoggedIn(true));
-
       dispatch(getAuthenticateAction());
 
       navigate("/", { replace: true });
