@@ -27,16 +27,6 @@ export const loginAction = (input) => async (dispatch) => {
     });
 };
 
-export const redirectToGoogleAction = () => {
-  const BASE_URL = import.meta.env.VITE_QUIZ_SERVER;
-
-  if (BASE_URL) {
-    window.location.href = `${BASE_URL}${API_ENDPOINT.GOOGLE}`;
-  } else {
-    console.error("Backend URL is not defined in environment variables");
-  }
-};
-
 export const getAuthenticateAction = () => async (dispatch) => {
   try {
     const result = await reduxAuthenticate();

@@ -6,7 +6,7 @@ import { BiLockAlt, BiShow, BiHide } from "react-icons/bi";
 import { MdOutlineMail } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { showLoadingToast, showSuccessToast } from "../../helper/ToastHelper";
-import { loginAction, redirectToGoogleAction } from "../../redux/action/auth/loginAction";
+import { loginAction } from "../../redux/action/auth/loginAction";
 
 export const Login = () => {
   const dispatch = useDispatch();
@@ -150,7 +150,10 @@ export const Login = () => {
             {/* Google Login Button */}
             <button
               type="button"
-              onClick={() => redirectToGoogleAction()}
+              onClick={() =>
+                (window.location =
+                  "https://simple-quiz-app-be.vercel.app/api/v1/auth/google")
+              }
               className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-xl border border-gray-200 bg-gray-100 py-3 text-sm font-semibold text-gray-700 transition-all hover:border-blue-600 hover:bg-gray-50 active:scale-95"
             >
               <FcGoogle size={22} />
